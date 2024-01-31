@@ -20,7 +20,7 @@ function recoverPassword() {
       const storedPassword = storedUserData.password;
 
       // Envia a solicitação para a API
-      fetch("https://churrascomentro-api-email.vercel.app/api/send-email", {
+      fetch("https://churrascomentro-api-email.onrender.com/api/send-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
