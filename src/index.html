@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="favicon.svg" type="image/x-icon" />
+    <title>Churrascômetro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+      };
+      if (
+        localStorage.getItem("color-theme") === "dark" ||
+        (!("color-theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+  </head>
+
+  <body class="flex flex-col h-full">
+
+      <header class="flex-none">
+        <nav class="bg-[#EEEEEE] border-gray-200 dark:bg-[#181c19]">
+          <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
+            <a href="#" class="flex items-center space-x-3">
+              <img src="./assets/img/logo.svg" class="h-8" alt="AdaFood Logo" />
+              <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">AdaFood</span>
+            </a>
+            <!-- Toggle DarkMode -->
+            <div class="flex text-xl space-x-3 md:space-x-0">
+              <button
+                id="theme-toggle"
+                type="button"
+                class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5"
+                data-tooltip-target="tooltip-bottom"
+              >
+                <svg
+                  id="theme-toggle-dark-icon"
+                  class="hidden w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                </svg>
+                <svg
+                  id="theme-toggle-light-icon"
+                  class="hidden w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+              </button>
+              <div
+                id="tooltip-bottom"
+                role="tooltip"
+                class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-[#090a0f] rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+              >
+                Toggle DarkMode
+                <div class="tooltip-arrow" data-popper-arrow></div>
+              </div>
+            </div>
+            <!-- Toggle DarkMode -->
+          </div>
+        </nav>
+      </header>
+
+      <main class="flex-auto">
+        <!-- Hero section -->
+        <section class="block bg-white dark:bg-[#0f1216]">
+          <div class="py-8 mx-auto max-w-screen-xl text-center lg:p-6">
+            <h1 class="mb-4 text-4xl font-extrabold text-gray-900 dark:text-white">CHURRASCÔMETRO</h1>
+            <p class="font-light text-gray-500 sm:text-xl dark:text-gray-400">
+              Precisa de uma ajudinha com o churrasco?
+            </p>
+          </div>
+        </section>
+
+        <!-- Steppers section -->
+        <section class="block bg-white dark:bg-[#0f1216]">
+          <div id="stepper" class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-10">
+            <ol class="flex items-center w-full">
+              <li
+                id="guests-indicator"
+                class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-[#181c19]"
+              >
+                <span
+                  class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 dark:bg-[#181c19] shrink-0"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-4 h-4 text-gray-500 lg:w-5 lg:h-5 dark:text-gray-100"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"
+                    />
+                  </svg>
+                  <svg
+                    class="hidden w-3.5 h-3.5 text-gray-500 lg:w-4 lg:h-4 dark:text-gray-100"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 16 12"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M1 5.917 5.724 10.5 15 1.5"
+                    />
+                  </svg>
+                </span>
+              </li>
+              <li
+                id="meats-indicator"
+                class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-[#181c19]"
+              >
+                <span
+                  class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 dark:bg-[#181c19] shrink-0"
+                >
+                  <svg
+                    class="w-4 h-4 text-gray-500 lg:w-5 lg:h-5 dark:text-gray-100"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-beef"
+                  >
+                    <circle cx="12.5" cy="8.5" r="2.5" />
+                    <path
+                      d="M12.5 2a6.5 6.5 0 0 0-6.22 4.6c-1.1 3.13-.78 3.9-3.18 6.08A3 3 0 0 0 5 18c4 0 8.4-1.8 11.4-4.3A6.5 6.5 0 0 0 12.5 2Z"
+                    />
+                    <path
+                      d="m18.5 6 2.19 4.5a6.48 6.48 0 0 1 .31 2 6.49 6.49 0 0 1-2.6 5.2C15.4 20.2 11 22 7 22a3 3 0 0 1-2.68-1.66L2.4 16.5"
+                    />
+                  </svg>
+                  <svg
+                    class="hidden w-3.5 h-3.5 text-gray-500 lg:w-4 lg:h-4 dark:text-gray-100"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 16 12"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M1 5.917 5.724 10.5 15 1.5"
+                    />
+                  </svg>
+                </span>
+              </li>
+              <li
+                id="sideDishes-indicator"
+                class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-[#181c19]"
+              >
+                <span
+                  class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 dark:bg-[#181c19] shrink-0"
+                >
+                  <svg
+                    class="w-4 h-4 text-gray-500 lg:w-5 lg:h-5 dark:text-gray-100"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-salad"
+                  >
+                    <path d="M7 21h10" />
+                    <path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z" />
+                    <path
+                      d="M11.38 12a2.4 2.4 0 0 1-.4-4.77 2.4 2.4 0 0 1 3.2-2.77 2.4 2.4 0 0 1 3.47-.63 2.4 2.4 0 0 1 3.37 3.37 2.4 2.4 0 0 1-1.1 3.7 2.51 2.51 0 0 1 .03 1.1"
+                    />
+                    <path d="m13 12 4-4" />
+                    <path d="M10.9 7.25A3.99 3.99 0 0 0 4 10c0 .73.2 1.41.54 2" />
+                  </svg>
+                  <svg
+                    class="hidden w-3.5 h-3.5 text-gray-500 lg:w-4 lg:h-4 dark:text-gray-100"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 16 12"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M1 5.917 5.724 10.5 15 1.5"
+                    />
+                  </svg>
+                </span>
+              </li>
+              <li
+                id="drinks-indicator"
+                class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-[#181c19]"
+              >
+                <span
+                  class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 dark:bg-[#181c19] shrink-0"
+                >
+                  <svg
+                    class="w-4 h-4 text-gray-500 lg:w-5 lg:h-5 dark:text-gray-100"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-beer"
+                  >
+                    <path d="M17 11h1a3 3 0 0 1 0 6h-1" />
+                    <path d="M9 12v6" />
+                    <path d="M13 12v6" />
+                    <path
+                      d="M14 7.5c-1 0-1.44.5-3 .5s-2-.5-3-.5-1.72.5-2.5.5a2.5 2.5 0 0 1 0-5c.78 0 1.57.5 2.5.5S9.44 2 11 2s2 1.5 3 1.5 1.72-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.78 0-1.5-.5-2.5-.5Z"
+                    />
+                    <path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8" />
+                  </svg>
+                  <svg
+                    class="hidden w-3.5 h-3.5 text-gray-500 lg:w-4 lg:h-4 dark:text-gray-100"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 16 12"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M1 5.917 5.724 10.5 15 1.5"
+                    />
+                  </svg>
+                </span>
+              </li>
+              <li id="supplies-indicator">
+                <span
+                  class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 dark:bg-[#181c19] shrink-0"
+                >
+                  <svg
+                    class="w-4 h-4 text-gray-500 lg:w-5 lg:h-5 dark:text-gray-100"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-flame-kindling"
+                  >
+                    <path
+                      d="M12 2c1 3 2.5 3.5 3.5 4.5A5 5 0 0 1 17 10a5 5 0 1 1-10 0c0-.3 0-.6.1-.9a2 2 0 1 0 3.3-2C8 4.5 11 2 12 2Z"
+                    />
+                    <path d="m5 22 14-4" />
+                    <path d="m5 18 14 4" />
+                  </svg>
+                  <svg
+                    class="hidden w-3.5 h-3.5 text-gray-500 lg:w-4 lg:h-4 dark:text-gray-100"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 16 12"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M1 5.917 5.724 10.5 15 1.5"
+                    />
+                  </svg>
+                </span>
+              </li>
+            </ol>
+          </div>
+        </section>
+
+        <!-- Pages section -->
+        <section class="block bg-white dark:bg-[#0f1216]">
+          <div id="wrap" class="relative">
+            <div id="guests" class="block">
+              <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-6">
+                <div class="mx-auto mb-8 max-w-screen-sm lg:mb-16">
+                  <h2 class="mb-4 text-2xl tracking-tight font-extrabold text-gray-900 dark:text-white">
+                    Quantas pessoas vão ao churrasco?
+                  </h2>
+                </div>
+                <div class="space-y-8 lg:grid lg:grid-cols-3 sm:gap-6 xl:gap-10 lg:space-y-0">
+                  <!-- Homens -->
+                  <div
+                    class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow dark:border-gray-600 xl:p-8 dark:bg-[#181c19] dark:text-white"
+                  >
+                    <div class="flex flex-col items-center py-4">
+                      <img
+                        class="w-24 h-24 mb-3 rounded-full shadow-lg"
+                        src="./assets/img/user-men.png"
+                        alt="Avatar man"
+                      />
+                      <h3 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">Homens</h3>
+                      <span id="menCounter" class="text-lg text-gray-500 dark:text-gray-400">0</span>
+                      <div class="flex mt-4 md:mt-6">
+                        <button
+                          id="decrementMen"
+                          type="button"
+                          class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                        >
+                          <svg
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            x="0px"
+                            y="0px"
+                            viewBox="0 0 128 128"
+                            style="enable-background: new 0 0 14 10"
+                            xml:space="preserve"
+                          >
+                            <g id="_x32_">
+                              <path
+                                style="fill: #303030"
+                                d="M125.61,71.238H2.39c-1.32,0-2.39-1.07-2.39-2.39v-9.787c0-1.32,1.07-2.39,2.39-2.39h123.22
+  c1.32,0,2.39,1.07,2.39,2.39v9.787C128,70.168,126.93,71.238,125.61,71.238z"
+                              />
+                            </g>
+                            <g id="Layer_1"></g>
+                          </svg>
+                        </button>
+                        <button
+                          id="incrementMen"
+                          type="button"
+                          class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                        >
+                          <svg
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            x="0px"
+                            y="0px"
+                            viewBox="0 0 128 128"
+                            style="enable-background: new 0 0 128 128"
+                            xml:space="preserve"
+                          >
+                            <g id="_x33_">
+                              <path
+                                style="fill: #303030"
+                                d="M128,63.954c0,2.006-0.797,3.821-2.136,5.127c-1.308,1.337-3.125,2.133-5.166,2.133H71.302v49.356
+           c0,4.012-3.284,7.292-7.302,7.292c-2.009,0-3.827-0.828-5.166-2.134c-1.308-1.337-2.136-3.152-2.136-5.159V71.214H7.302
+           c-4.05,0-7.302-3.248-7.302-7.26c0-2.006,0.797-3.853,2.136-5.159c1.308-1.306,3.125-2.134,5.166-2.134h49.395V7.306
+           c0-4.012,3.284-7.26,7.302-7.26c2.009,0,3.827,0.828,5.166,2.133c1.308,1.306,2.136,3.121,2.136,5.127v49.356h49.395
+           C124.747,56.662,128,59.91,128,63.954z"
+                              />
+                            </g>
+                            <g id="Layer_1"></g>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Mulheres -->
+                  <div
+                    class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow dark:border-gray-600 xl:p-8 dark:bg-[#181c19] dark:text-white"
+                  >
+                    <div class="flex flex-col items-center py-4">
+                      <img
+                        class="w-24 h-24 mb-3 rounded-full shadow-lg"
+                        src="./assets/img/user-women.png"
+                        alt="Avatar woman"
+                      />
+                      <h3 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">Mulheres</h3>
+                      <span id="womenCounter" class="text-lg text-gray-500 dark:text-gray-400">0</span>
+                      <div class="flex mt-4 md:mt-6">
+                        <button
+                          id="decrementWomen"
+                          type="button"
+                          class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                        >
+                          <svg
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            x="0px"
+                            y="0px"
+                            viewBox="0 0 128 128"
+                            style="enable-background: new 0 0 14 10"
+                            xml:space="preserve"
+                          >
+                            <g id="_x32_">
+                              <path
+                                style="fill: #303030"
+                                d="M125.61,71.238H2.39c-1.32,0-2.39-1.07-2.39-2.39v-9.787c0-1.32,1.07-2.39,2.39-2.39h123.22
+  c1.32,0,2.39,1.07,2.39,2.39v9.787C128,70.168,126.93,71.238,125.61,71.238z"
+                              />
+                            </g>
+                            <g id="Layer_1"></g>
+                          </svg>
+                        </button>
+                        <button
+                          id="incrementWomen"
+                          type="button"
+                          class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                        >
+                          <svg
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            x="0px"
+                            y="0px"
+                            viewBox="0 0 128 128"
+                            style="enable-background: new 0 0 128 128"
+                            xml:space="preserve"
+                          >
+                            <g id="_x33_">
+                              <path
+                                style="fill: #303030"
+                                d="M128,63.954c0,2.006-0.797,3.821-2.136,5.127c-1.308,1.337-3.125,2.133-5.166,2.133H71.302v49.356
+           c0,4.012-3.284,7.292-7.302,7.292c-2.009,0-3.827-0.828-5.166-2.134c-1.308-1.337-2.136-3.152-2.136-5.159V71.214H7.302
+           c-4.05,0-7.302-3.248-7.302-7.26c0-2.006,0.797-3.853,2.136-5.159c1.308-1.306,3.125-2.134,5.166-2.134h49.395V7.306
+           c0-4.012,3.284-7.26,7.302-7.26c2.009,0,3.827,0.828,5.166,2.133c1.308,1.306,2.136,3.121,2.136,5.127v49.356h49.395
+           C124.747,56.662,128,59.91,128,63.954z"
+                              />
+                            </g>
+                            <g id="Layer_1"></g>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Crianças -->
+                  <div
+                    class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow dark:border-gray-600 xl:p-8 dark:bg-[#181c19] dark:text-white"
+                  >
+                    <div class="flex flex-col items-center py-4">
+                      <img
+                        class="w-24 h-24 mb-3 rounded-full shadow-lg"
+                        src="./assets/img/user-children.png"
+                        alt="Avatar child"
+                      />
+                      <h3 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">Crianças</h3>
+                      <span id="childrenCounter" class="text-lg text-gray-500 dark:text-gray-400">0</span>
+                      <div class="flex mt-4 md:mt-6">
+                        <button
+                          id="decrementChildren"
+                          type="button"
+                          class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                        >
+                          <svg
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            x="0px"
+                            y="0px"
+                            viewBox="0 0 128 128"
+                            style="enable-background: new 0 0 14 10"
+                            xml:space="preserve"
+                          >
+                            <g id="_x32_">
+                              <path
+                                style="fill: #303030"
+                                d="M125.61,71.238H2.39c-1.32,0-2.39-1.07-2.39-2.39v-9.787c0-1.32,1.07-2.39,2.39-2.39h123.22
+  c1.32,0,2.39,1.07,2.39,2.39v9.787C128,70.168,126.93,71.238,125.61,71.238z"
+                              />
+                            </g>
+                            <g id="Layer_1"></g>
+                          </svg>
+                        </button>
+                        <button
+                          id="incrementChildren"
+                          type="button"
+                          class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                        >
+                          <svg
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            x="0px"
+                            y="0px"
+                            viewBox="0 0 128 128"
+                            style="enable-background: new 0 0 128 128"
+                            xml:space="preserve"
+                          >
+                            <g id="_x33_">
+                              <path
+                                style="fill: #303030"
+                                d="M128,63.954c0,2.006-0.797,3.821-2.136,5.127c-1.308,1.337-3.125,2.133-5.166,2.133H71.302v49.356
+           c0,4.012-3.284,7.292-7.302,7.292c-2.009,0-3.827-0.828-5.166-2.134c-1.308-1.337-2.136-3.152-2.136-5.159V71.214H7.302
+           c-4.05,0-7.302-3.248-7.302-7.26c0-2.006,0.797-3.853,2.136-5.159c1.308-1.306,3.125-2.134,5.166-2.134h49.395V7.306
+           c0-4.012,3.284-7.26,7.302-7.26c2.009,0,3.827,0.828,5.166,2.133c1.308,1.306,2.136,3.121,2.136,5.127v49.356h49.395
+           C124.747,56.662,128,59.91,128,63.954z"
+                              />
+                            </g>
+                            <g id="Layer_1"></g>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="meats" class="hidden">
+              <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+                <div class="mx-auto mb-8 max-w-screen-sm text-center lg:mb-16">
+                  <h2 class="mb-4 text-2xl tracking-tight font-extrabold text-gray-900 dark:text-white">
+                    Quais carnes serão servidas?
+                  </h2>
+                </div>
+
+                <div class="flex justify-center border-b border-gray-200 dark:border-gray-700">
+                  <ul
+                    id="tab"
+                    role="tablist"
+                    class="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400"
+                  >
+                    <li class="me-1" role="presentation">
+                      <button
+                        class="inline-flex items-center justify-center px-2 py-4 text-[#a6f750] border-b-2 border-[#a6f750] rounded-t-lg active dark:text-[#a6f750] dark:border-[#a6f750] group"
+                        id="ox-cuts-tab"
+                        data-tabs-target="#oxCuts"
+                        type="button"
+                        role="tab"
+                        aria-controls="oxCuts"
+                        aria-selected="true"
+                      >
+                        <img
+                          class="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                          src="./assets/img/icon-cow.svg"
+                          alt=""
+                        />
+                        Boi
+                      </button>
+                    </li>
+                    <li class="me-1" role="presentation">
+                      <button
+                        id="pork-cuts-tab"
+                        data-tabs-target="#porkCuts"
+                        type="button"
+                        role="tab"
+                        aria-controls="porkCuts"
+                        aria-selected="false"
+                        class="inline-flex items-center justify-center px-2 py-4 border-b-2 border-transparent rounded-t-lg hover:text-[#a6f750] hover:border-[#a6f750] dark:hover:text-[#a6f750] group"
+                      >
+                        <img
+                          class="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                          src="./assets/img/icon-pig.svg"
+                          alt=""
+                        />
+                        Porco
+                      </button>
+                    </li>
+                    <li class="me-1" role="presentation">
+                      <button
+                        id="chicken-cuts-tab"
+                        data-tabs-target="#chickenCuts"
+                        type="button"
+                        role="tab"
+                        aria-controls="chickenCuts"
+                        aria-selected="false"
+                        class="inline-flex items-center justify-center px-2 py-4 border-b-2 border-transparent rounded-t-lg hover:text-[#a6f750] hover:border-[#a6f750] dark:hover:text-[#a6f750] group"
+                      >
+                        <img
+                          class="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                          src="./assets/img/icon-cock.svg"
+                          alt=""
+                        />
+                        Frango
+                      </button>
+                    </li>
+                    <li class="me-1" role="presentation">
+                      <button
+                        id="others-tab"
+                        data-tabs-target="#others"
+                        type="button"
+                        role="tab"
+                        aria-controls="others"
+                        aria-selected="false"
+                        class="inline-flex items-center justify-center px-2 py-4 border-b-2 border-transparent rounded-t-lg hover:text-[#a6f750] hover:border-[#a6f750] dark:hover:text-[#a6f750] group"
+                      >
+                        <img
+                          class="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                          src="./assets/img/icon-kebab.svg"
+                          alt=""
+                        />
+                        Outros
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+
+                <div id="tab-content">
+                  <div id="oxCuts" class="hidden" role="tabpanel" aria-labelledby="ox-cuts-tab">
+                    <div class="grid gap-6 m-6 md:grid-cols-2">
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="ox-cuts-checkbox-1"
+                            type="checkbox"
+                            value=""
+                            name="ox-cuts-checkbox-1"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="ox-cuts-checkbox-1"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Alcatra</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="ox-cuts-checkbox-2"
+                            type="checkbox"
+                            value=""
+                            name="ox-cuts-checkbox-2"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="ox-cuts-checkbox-2"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Contrafilé</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="ox-cuts-checkbox-3"
+                            type="checkbox"
+                            value=""
+                            name="ox-cuts-checkbox-3"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="ox-cuts-checkbox-3"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Costela</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="ox-cuts-checkbox-4"
+                            type="checkbox"
+                            value=""
+                            name="ox-cuts-checkbox-4"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="ox-cuts-checkbox-4"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Fraldinha</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="ox-cuts-checkbox-5"
+                            type="checkbox"
+                            value=""
+                            name="ox-cuts-checkbox-5"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="ox-cuts-checkbox-5"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Maminha</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="ox-cuts-checkbox-6"
+                            type="checkbox"
+                            value=""
+                            name="ox-cuts-checkbox-6"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="ox-cuts-checkbox-6"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Picanha</label
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="porkCuts" class="hidden" role="tabpanel" aria-labelledby="pork-cuts-tab">
+                    <div class="grid gap-6 m-6 md:grid-cols-2">
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="pork-cuts-checkbox-1"
+                            type="checkbox"
+                            value=""
+                            name="pork-cuts-checkbox-1"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="pork-cuts-checkbox-1"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Costelinha</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="pork-cuts-checkbox-2"
+                            type="checkbox"
+                            value=""
+                            name="pork-cuts-checkbox-2"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="pork-cuts-checkbox-2"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Lombo</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="pork-cuts-checkbox-3"
+                            type="checkbox"
+                            value=""
+                            name="pork-cuts-checkbox-3"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="pork-cuts-checkbox-3"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Panceta</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="pork-cuts-checkbox-4"
+                            type="checkbox"
+                            value=""
+                            name="pork-cuts-checkbox-4"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="pork-cuts-checkbox-4"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Pernil</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="pork-cuts-checkbox-5"
+                            type="checkbox"
+                            value=""
+                            name="pork-cuts-checkbox-5"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="pork-cuts-checkbox-5"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Picanha Suína</label
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="chickenCuts" class="hidden" role="tabpanel" aria-labelledby="chicken-cuts-tab">
+                    <div class="grid gap-6 m-6 md:grid-cols-2">
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="chicken-cuts-checkbox-1"
+                            type="checkbox"
+                            value=""
+                            name="chicken-cuts-checkbox-1"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="chicken-cuts-checkbox-1"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Asa</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="chicken-cuts-checkbox-2"
+                            type="checkbox"
+                            value=""
+                            name="chicken-cuts-checkbox-2"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="chicken-cuts-checkbox-2"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Coração</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="chicken-cuts-checkbox-3"
+                            type="checkbox"
+                            value=""
+                            name="chicken-cuts-checkbox-3"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="chicken-cuts-checkbox-3"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Coxinha da Asa</label
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="others" class="hidden" role="tabpanel" aria-labelledby="others-tab">
+                    <div class="grid gap-6 m-6 md:grid-cols-2">
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="others-checkbox-1"
+                            type="checkbox"
+                            value=""
+                            name="others-checkbox-1"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="others-checkbox-1"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Linguiça para Churrasco</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="others-checkbox-2"
+                            type="checkbox"
+                            value=""
+                            name="others-checkbox-2"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="others-checkbox-2"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Linguiça Toscana</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="others-checkbox-3"
+                            type="checkbox"
+                            value=""
+                            name="others-checkbox-3"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="others-checkbox-3"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Pão de Alho</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="others-checkbox-4"
+                            type="checkbox"
+                            value=""
+                            name="others-checkbox-4"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="others-checkbox-4"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Queijo Coalho</label
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                          <input
+                            id="others-checkbox-5"
+                            type="checkbox"
+                            value=""
+                            name="others-checkbox-5"
+                            data-type="meat"
+                            class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="others-checkbox-5"
+                            class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >Salsichão</label
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="border-b border-gray-200 dark:border-gray-700"></div>
+              </div>
+            </div>
+
+            <div id="sideDishes" class="hidden">
+              <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-6">
+                <div class="mx-auto max-w-screen-xl text-center">
+                  <h2 class="mb-4 text-2xl font-extrabold text-gray-900 dark:text-white">
+                    Você pensou em algum acompanhamento?
+                  </h2>
+                </div>
+
+                <div class="border-b border-gray-200 dark:border-gray-700"></div>
+                <div class="grid gap-6 m-6 md:grid-cols-2">
+                  <div>
+                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                      <input
+                        id="sideDishes-checkbox-1"
+                        type="checkbox"
+                        value=""
+                        name="sideDishes-checkbox-1"
+                        data-type="sideDish"
+                        class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        for="sideDishes-checkbox-1"
+                        class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >Arroz</label
+                      >
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                      <input
+                        id="sideDishes-checkbox-2"
+                        type="checkbox"
+                        value=""
+                        name="sideDishes-checkbox-2"
+                        data-type="sideDish"
+                        class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        for="sideDishes-checkbox-2"
+                        class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >Farofa</label
+                      >
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                      <input
+                        id="sideDishes-checkbox-3"
+                        type="checkbox"
+                        value=""
+                        name="sideDishes-checkbox-3"
+                        data-type="sideDish"
+                        class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        for="sideDishes-checkbox-3"
+                        class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >Vinagrete</label
+                      >
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                      <input
+                        id="sideDishes-checkbox-4"
+                        type="checkbox"
+                        value=""
+                        name="sideDishes-checkbox-4"
+                        data-type="sideDish"
+                        class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        for="sideDishes-checkbox-4"
+                        class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >Salada de Maionese</label
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="border-b border-gray-200 dark:border-gray-700"></div>
+              </div>
+            </div>
+
+            <div id="drinks" class="hidden">
+              <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-6">
+                <div class="mx-auto max-w-screen-xl text-center">
+                  <h2 class="mb-4 text-2xl font-extrabold text-gray-900 dark:text-white">
+                    Quais bebidas deseja servir?
+                  </h2>
+                </div>
+
+                <div class="border-b border-gray-200 dark:border-gray-700"></div>
+                <div class="grid gap-6 m-6 md:grid-cols-2">
+                  <div>
+                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                      <input
+                        id="drinks-checkbox-1"
+                        type="checkbox"
+                        value=""
+                        name="drinks-checkbox-1"
+                        data-type="drinks"
+                        class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        for="drinks-checkbox-1"
+                        class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >Água</label
+                      >
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                      <input
+                        id="drinks-checkbox-2"
+                        type="checkbox"
+                        value=""
+                        name="drinks-checkbox-2"
+                        data-type="drinks"
+                        class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        for="drinks-checkbox-2"
+                        class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >Cerveja</label
+                      >
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                      <input
+                        id="drinks-checkbox-3"
+                        type="checkbox"
+                        value=""
+                        name="drinks-checkbox-3"
+                        data-type="drinks"
+                        class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        for="drinks-checkbox-3"
+                        class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >Refrigerante</label
+                      >
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                      <input
+                        id="drinks-checkbox-4"
+                        type="checkbox"
+                        value=""
+                        name="drinks-checkbox-4"
+                        data-type="drinks"
+                        class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        for="drinks-checkbox-4"
+                        class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >Suco</label
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="border-b border-gray-200 dark:border-gray-700"></div>
+              </div>
+            </div>
+
+            <div id="supplies" class="hidden">
+              <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-6">
+                <div class="mx-auto max-w-screen-xl text-center">
+                  <h2 class="mb-4 text-2xl font-extrabold text-gray-900 dark:text-white">
+                    Não esqueça dos suprimentos
+                  </h2>
+                </div>
+
+                <div class="border-b border-gray-200 dark:border-gray-700"></div>
+                <div class="grid gap-6 m-6 md:grid-cols-2">
+                  <div>
+                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                      <input
+                        id="supplies-checkbox-1"
+                        type="checkbox"
+                        value=""
+                        name="supplies-checkbox-1"
+                        data-type="supplies"
+                        class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        for="supplies-checkbox-1"
+                        class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >Carvão</label
+                      >
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                      <input
+                        id="supplies-checkbox-2"
+                        type="checkbox"
+                        value=""
+                        name="supplies-checkbox-2"
+                        data-type="supplies"
+                        class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        for="supplies-checkbox-2"
+                        class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >Sal Grosso</label
+                      >
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                      <input
+                        id="supplies-checkbox-3"
+                        type="checkbox"
+                        value=""
+                        name="supplies-checkbox-3"
+                        data-type="supplies"
+                        class="w-4 h-4 text-[#a6f750] bg-gray-100 border-gray-300 rounded focus:ring-[#a6f750] dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        for="supplies-checkbox-3"
+                        class="py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >Gelo</label
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="border-b border-gray-200 dark:border-gray-700"></div>
+
+                <button
+                  data-modal-target="login-modal"
+                  data-modal-toggle="login-modal"
+                  type="button"
+                  class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 shadow-lg shadow-lime-500/50 dark:shadow-lg dark:shadow-lime-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center m-4"
+                >
+                  Calcular
+                </button>
+              </div>
+            </div>
+            <!-- Slider controls -->
+            <!-- Prev button -->
+            <button
+              type="button"
+              class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+              data-prev
+            >
+              <span
+                class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none"
+              >
+                <svg
+                  class="w-4 h-4 text-[#a6f750] dark:text-[#a6f750]"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 1 1 5l4 4"
+                  />
+                </svg>
+                <span class="sr-only">Previous</span>
+              </span>
+            </button>
+            <!-- Next button -->
+            <button
+              type="button"
+              class="hidden absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+              data-next
+            >
+              <span
+                class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none"
+              >
+                <svg
+                  class="w-4 h-4 text-[#a6f750] dark:text-[#a6f750]"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m1 9 4-4-4-4"
+                  />
+                </svg>
+                <span class="sr-only">Next</span>
+              </span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Result page -->
+        <section class="hidden bg-white dark:bg-[#0f1216]">
+          <div class="py-8 mx-auto max-w-screen-xl text-center space-y-4 lg:p-6">
+            <h1 class="mb-4 text-4xl font-extrabold text-gray-900 dark:text-white">CHURRASCÔMETRO</h1>
+            <p class="mb-4 font-light text-gray-500 sm:text-xl dark:text-gray-400">
+              Veja o resultado para seu churrasco:
+            </p>
+            <p id="totalGuests" class="mb-4 text-3xl font-bold text-gray-900 dark:text-white"></p>
+            <ul id="guestsList" class="flex items-center justify-center gap-2 text-gray-500 dark:text-gray-400"></ul>
+          </div>
+
+          <!-- Table meats -->
+          <div class="py-8 flex items-center justify-center text-center lg:p-6">
+            <div class="relative shadow-md rounded-lg">
+              <table id="tableMeats" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <caption
+                  class="p-5 text-lg font-semibold text-left text-gray-900 bg-white dark:text-white dark:bg-gray-800"
+                >
+                  Carnes
+                </caption>
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr>
+                    <th scope="col" class="px-6 py-3">Item</th>
+                    <th scope="col" class="px-6 py-3">Quantidade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                  ></tr>
+                </tbody>
+                <tfoot>
+                  <tr class="font-semibold text-gray-900 dark:text-white">
+                    <th scope="row" class="px-6 py-3 text-base">Total</th>
+                    <td class="px-6 py-3"></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <!-- Table sideDishes -->
+          <div class="py-8 flex items-center justify-center text-center lg:p-6">
+            <div class="relative shadow-md rounded-lg">
+              <table id="tableSideDishes" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <caption
+                  class="p-5 text-lg font-semibold text-left text-gray-900 bg-white dark:text-white dark:bg-gray-800"
+                >
+                  Acompanhamentos
+                </caption>
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr>
+                    <th scope="col" class="px-6 py-3">Item</th>
+                    <th scope="col" class="px-6 py-3">Quantidade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                  ></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Table drinks -->
+          <div class="py-8 flex items-center justify-center text-center lg:p-6">
+            <div class="relative shadow-md rounded-lg">
+              <table id="tableDrinks" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <caption
+                  class="p-5 text-lg font-semibold text-left text-gray-900 bg-white dark:text-white dark:bg-gray-800"
+                >
+                  Bebidas
+                </caption>
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr>
+                    <th scope="col" class="px-6 py-3">Item</th>
+                    <th scope="col" class="px-6 py-3">Quantidade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                  ></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Table supplies -->
+          <div class="py-8 flex items-center justify-center text-center lg:p-6">
+            <div class="relative shadow-md rounded-lg">
+              <table id="tableSupplies" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <caption
+                  class="p-5 text-lg font-semibold text-left text-gray-900 bg-white dark:text-white dark:bg-gray-800"
+                >
+                  Suprimentos
+                </caption>
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr>
+                    <th scope="col" class="px-6 py-3">Item</th>
+                    <th scope="col" class="px-6 py-3">Quantidade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                  ></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="py-8 mx-auto max-w-screen-xl text-center lg:p-6">
+            <p class="mb-4 font-light text-gray-500 sm:text-xl dark:text-gray-400">
+              Agora que você já sabe o que comprar para seu churrasco
+            </p>
+          </div>
+
+          <div class="max-w-lg mx-auto p-6 space-y-4">
+            <button
+              id="print-button"
+              type="button"
+              class="w-full text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 shadow-lg shadow-lime-500/50 dark:shadow-lg dark:shadow-lime-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            >
+              Imprimir minha lista
+            </button>
+
+            <div class="flex items-center justify-center">
+              <div class="w-full h-0.5 bg-gray-500 dark:bg-gray-400"></div>
+              <div class="px-5 text-center text-gray-500 dark:text-gray-400">ou</div>
+              <div class="w-full h-0.5 bg-gray-500 dark:bg-gray-400"></div>
+            </div>
+
+            <button
+              id="remake-button"
+              type="button"
+              class="w-full relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-lime-200 to-lime-500 group-hover:from-lime-200 group-hover:to-lime-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800"
+            >
+              <span
+                class="w-full relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
+              >
+                Refazer
+              </span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Login modal -->
+        <div
+          id="login-modal"
+          tabindex="-1"
+          class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+        >
+          <div class="relative p-4 w-full max-w-md max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+              <!-- Modal header -->
+              <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Entrar</h3>
+                <button
+                  type="button"
+                  class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                  data-modal-hide="login-modal"
+                >
+                  <svg
+                    class="w-3 h-3"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 14"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                    />
+                  </svg>
+                  <span class="sr-only">Close modal</span>
+                </button>
+              </div>
+              <!-- Modal body -->
+              <div class="p-4 md:p-5">
+                <form class="space-y-4" action="#">
+                  <div class="relative z-0 w-full mb-5 group">
+                    <input
+                      type="email"
+                      name="floating_email"
+                      id="floating_email"
+                      class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#a6f750] focus:outline-none focus:ring-0 focus:border-[#a6f750] peer"
+                      placeholder=" "
+                    />
+                    <label
+                      for="floating_email"
+                      class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-[#a6f750] peer-focus:dark:text-[#a6f750] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                      >E-mail</label
+                    >
+                  </div>
+                  <div class="relative z-0 w-full mb-5 group">
+                    <input
+                      type="password"
+                      name="floating_password"
+                      id="floating_password"
+                      class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#a6f750] focus:outline-none focus:ring-0 focus:border-[#a6f750] peer"
+                      placeholder=" "
+                    />
+                    <label
+                      for="floating_password"
+                      class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-[#a6f750] peer-focus:dark:text-[#a6f750] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                      >Senha</label
+                    >
+                  </div>
+                  <div class="flex justify-between">
+                    <div class="flex items-start">
+                      <div class="flex items-center h-5">
+                        <input
+                          id="remember"
+                          type="checkbox"
+                          value=""
+                          class="w-4 h-4 text-[#a6f750] border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-[#a6f750] dark:bg-gray-600 dark:border-gray-500 dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
+                        />
+                      </div>
+                      <label for="remember" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >Lembre-me</label
+                      >
+                    </div>
+                    <a
+                      data-modal-target="recover-modal"
+                      data-modal-toggle="recover-modal"
+                      data-modal-hide="login-modal"
+                      href="#"
+                      class="text-sm text-[#a6f750] hover:underline dark:text-[#a6f750]"
+                      >Esqueceu sua senha?</a
+                    >
+                  </div>
+                  <button
+                    id="login-button"
+                    type="submit"
+                    class="w-full text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 shadow-lg shadow-lime-500/50 dark:shadow-lg dark:shadow-lime-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                  >
+                    Entrar
+                  </button>
+                  <div class="text-sm font-medium pb-4 text-gray-500 dark:text-gray-300">
+                    Não tem uma conta?
+                    <a
+                      data-modal-target="signup-modal"
+                      data-modal-toggle="signup-modal"
+                      data-modal-hide="login-modal"
+                      href="#"
+                      class="text-[#a6f750] hover:underline dark:text-[#a6f750]"
+                      >Criar uma conta</a
+                    >
+                  </div>
+                </form>
+                <div class="space-y-4">
+                  <div class="flex items-center justify-center">
+                    <div class="w-full h-0.5 bg-gray-500 dark:bg-gray-400"></div>
+                    <div class="px-5 text-center text-gray-500 dark:text-gray-400">ou</div>
+                    <div class="w-full h-0.5 bg-gray-500 dark:bg-gray-400"></div>
+                  </div>
+
+                  <button
+                    id="result-button"
+                    data-modal-hide="login-modal"
+                    type="button"
+                    class="w-full relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-lime-200 to-lime-500 group-hover:from-lime-200 group-hover:to-lime-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800"
+                  >
+                    <span
+                      class="w-full relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
+                    >
+                      Resultado
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recover password modal -->
+        <div
+          id="recover-modal"
+          tabindex="-1"
+          class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+        >
+          <div class="relative p-4 w-full max-w-md max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+              <!-- Modal header -->
+              <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Recuperar senha</h3>
+                <button
+                  type="button"
+                  class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                  data-modal-hide="recover-modal"
+                  data-modal-target="login-modal"
+                  data-modal-toggle="login-modal"
+                >
+                  <svg
+                    class="w-3 h-3"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 14"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                    />
+                  </svg>
+                  <span class="sr-only">Close modal</span>
+                </button>
+              </div>
+              <!-- Modal body -->
+              <div class="p-4 md:p-5">
+                <form class="space-y-4" action="#">
+                  <div class="relative z-0 w-full mb-5 group">
+                    <input
+                      type="email"
+                      name="emailRecoverPasswordLink"
+                      id="emailRecoverPasswordLink"
+                      class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#a6f750] focus:outline-none focus:ring-0 focus:border-[#a6f750] peer"
+                      placeholder=" "
+                    />
+                    <label
+                      for="recoverPasswordLink"
+                      class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-[#a6f750] peer-focus:dark:text-[#a6f750] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                      >E-mail</label
+                    >
+                  </div>
+
+                  <button
+                    id="recoverPasswordLink"
+                    data-modal-hide="recover-modal"
+                    data-modal-target="login-modal"
+                    data-modal-toggle="login-modal"
+                    type="submit"
+                    class="w-full text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 shadow-lg shadow-lime-500/50 dark:shadow-lg dark:shadow-lime-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                  >
+                    Enviar
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Signup modal -->
+        <div
+          id="signup-modal"
+          tabindex="-1"
+          class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+        >
+          <div class="relative p-4 w-full max-w-md max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+              <!-- Modal header -->
+              <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Cadastre-se</h3>
+                <button
+                  type="button"
+                  class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                  data-modal-toggle="signup-modal"
+                >
+                  <svg
+                    class="w-3 h-3"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 14"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                    />
+                  </svg>
+                  <span class="sr-only">Close modal</span>
+                </button>
+              </div>
+              <!-- Modal body -->
+              <div class="p-4 md:p-5">
+                <form class="space-y-4" method="get" action=".">
+                  <div class="relative z-0 w-full mb-5 group">
+                    <input
+                      type="email"
+                      name="email"
+                      id="email"
+                      class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#a6f750] focus:outline-none focus:ring-0 focus:border-[#a6f750] peer"
+                      placeholder=" "
+                      required
+                    />
+                    <label
+                      for="email"
+                      class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-[#a6f750] peer-focus:dark:text-[#a6f750] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                      >E-mail</label
+                    >
+                  </div>
+                  <div class="relative z-0 w-full mb-5 group">
+                    <input
+                      type="password"
+                      name="password"
+                      id="password"
+                      class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#a6f750] focus:outline-none focus:ring-0 focus:border-[#a6f750] peer"
+                      placeholder=" "
+                      required
+                    />
+                    <label
+                      for="password"
+                      class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-[#a6f750] peer-focus:dark:text-[#a6f750] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                      >Senha</label
+                    >
+                  </div>
+                  <div class="relative z-0 w-full mb-5 group">
+                    <input
+                      type="text"
+                      name="cep"
+                      id="cep"
+                      value=""
+                      size="10"
+                      maxlength="9"
+                      class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#a6f750] focus:outline-none focus:ring-0 focus:border-[#a6f750] peer"
+                      placeholder=" "
+                      required
+                    />
+                    <label
+                      for="cep"
+                      class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-[#a6f750] peer-focus:dark:text-[#a6f750] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                      >CEP</label
+                    >
+                    <p id="error-message" class="hidden mt-2 text-sm text-red-600 dark:text-red-500">
+                      <span class="font-medium">Oops!</span>
+                    </p>
+                  </div>
+                  <div class="grid md:grid-cols-2 md:gap-6">
+                    <div class="relative z-0 w-full mb-5 group">
+                      <input
+                        type="text"
+                        name="rua"
+                        id="rua"
+                        size="60"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#a6f750] focus:outline-none focus:ring-0 focus:border-[#a6f750] peer"
+                        placeholder=" "
+                        required
+                      />
+                      <label
+                        for="rua"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-[#a6f750] peer-focus:dark:text-[#a6f750] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                        >Rua</label
+                      >
+                    </div>
+                    <div class="relative z-0 w-full mb-5 group">
+                      <input
+                        type="text"
+                        name="bairro"
+                        id="bairro"
+                        size="40"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#a6f750] focus:outline-none focus:ring-0 focus:border-[#a6f750] peer"
+                        placeholder=" "
+                        required
+                      />
+                      <label
+                        for="bairro"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-[#a6f750] peer-focus:dark:text-[#a6f750] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                        >Bairro</label
+                      >
+                    </div>
+                  </div>
+                  <div class="grid md:grid-cols-2 md:gap-6">
+                    <div class="relative z-0 w-full mb-5 group">
+                      <input
+                        type="text"
+                        name="cidade"
+                        id="cidade"
+                        size="40"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#a6f750] focus:outline-none focus:ring-0 focus:border-[#a6f750] peer"
+                        placeholder=" "
+                        required
+                      />
+                      <label
+                        for="cidade"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-[#a6f750] peer-focus:dark:text-[#a6f750] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                        >Cidade</label
+                      >
+                    </div>
+                    <div class="relative z-0 w-full mb-5 group">
+                      <input
+                        type="text"
+                        name="uf"
+                        id="uf"
+                        size="2"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#a6f750] focus:outline-none focus:ring-0 focus:border-[#a6f750] peer"
+                        placeholder=" "
+                        required
+                      />
+                      <label
+                        for="uf"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-[#a6f750] peer-focus:dark:text-[#a6f750] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                        >Estado</label
+                      >
+                    </div>
+                  </div>
+
+                  <div class="flex items-center">
+                    <div class="flex items-center h-5">
+                      <input
+                        id="agree"
+                        type="checkbox"
+                        value=""
+                        class="w-4 h-4 text-[#a6f750] border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-[#a6f750] dark:bg-gray-600 dark:border-gray-500 dark:focus:ring-[#a6f750] dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
+                        required
+                      />
+                    </div>
+                    <label for="agree" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                      >Concordo em receber comunicações e ofertas personalizadas de acordo com meus interesses</label
+                    >
+                  </div>
+                  <button
+                    data-modal-hide="signup-modal"
+                    type="submit"
+                    class="w-full text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 shadow-lg shadow-lime-500/50 dark:shadow-lg dark:shadow-lime-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                  >
+                    Cadastre-se
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="flex-none">
+        <div class="bg-[#EEEEEE] border-gray-200 dark:bg-[#181c19]">
+          <div class="max-w-screen-xl sm:flex sm:items-center sm:justify-between mx-auto p-2">
+            <div class="flex justify-center sm:flex sm:items-center sm:justify-between">
+              <a href="#" class="flex items-center sm:mb-0">
+                <img src="./assets/img/logo.svg" class="h-8" alt="AdaFood Logo" />
+                <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">AdaFood</span>
+              </a>
+            </div>
+            <hr class="my-4 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
+            <span class="flex justify-center text-xs sm:text-sm text-gray-500 sm:text-center dark:text-gray-400"
+              >© 2024 <a href="#" class="hover:underline">AdaFood</a>. Feito com ❤️ por Abilio Alves.</span
+            >
+          </div>
+        </div>
+      </footer>
+
+    <script src="./js/darkMode.js"></script>
+    <script type="module" src="./js/script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+  </body>
+</html>
